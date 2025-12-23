@@ -215,23 +215,21 @@ manage_large_log_files() {
                     else
                         /usr/bin/echo "Failed to send log info to server"
                     fi
+                    sleep 2;
                     
                     # Xoa file daily log de cho phep xu ly tiep tuc trong lan chay tiep theo
-                    /usr/bin/rm -f /tmp/cronjob-1day-*.log
+                    # /usr/bin/rm -f /tmp/cronjob-1day-*.log
                     
-                    /usr/bin/echo "Breaking loop after processing one large file"
-                    break
+                    # /usr/bin/echo "Breaking loop after processing one large file"
+                    # break
                 fi
             fi
         fi
     done
     
-    # Ghi ket qua vao log neu khong co file lon nao duoc tim thay
-    if [ "$large_files_found" -eq 0 ]; then
-        /usr/bin/echo "# Summary: Processed $processed_files files, found $large_files_found large files" >> "$daily_log"
-        /usr/bin/echo "# Log management completed at $(/usr/bin/date)" >> "$daily_log"
-    fi
-    
+    # Ghi ket qua vao log
+    /usr/bin/echo "# Summary: Processed $processed_files files, found $large_files_found large files" >> "$daily_log"
+    /usr/bin/echo "# Log management completed at $(/usr/bin/date)" >> "$daily_log"
     /usr/bin/echo "Daily log management completed. Processed: $processed_files files, Large files: $large_files_found"
     return 0
 }
