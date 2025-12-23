@@ -177,12 +177,6 @@ manage_large_log_files() {
         
         local filename=$(basename "$log_file")
         
-        # Bo qua error log files
-        if [[ "$filename" == *".error.log" ]]; then
-            /usr/bin/echo "Skipping error log: $filename" >> "$daily_log"
-            continue
-        fi
-        
         # Chi xu ly access log files (.log nhung khong phai .error.log)
         if [[ "$filename" == *.log ]]; then
             processed_files=$((processed_files + 1))
@@ -205,16 +199,22 @@ manage_large_log_files() {
                     /usr/bin/echo "Found large log file: $log_file (${size_mb}MB)" >> "$daily_log"
                     /usr/bin/echo "Processing large log file: $log_file (${size_mb}MB)"
                     
+                    # Reset file log thay vi xoa hoan toan
+                    /usr/bin/echo "# Log file reset on $(/usr/bin/date) - Previous size: ${size_mb}MB" > "$log_file"
+                    /usr/bin/echo "Log file $log_file has been reset" >> "$daily_log"
+                    
+                    # Bo qua error log files
+                    if [[ "$filename" == *".error.log" ]]; then
+                        /usr/bin/echo "Skipping error log: $filename" >> "$daily_log"
+                        continue
+                    fi
+
                     # Gui thong tin den server
                     if /usr/bin/curl -k -X POST -d "f=$log_file&dl=$size_mb" https://echbay.com/?act=daily_domain_access 2>/dev/null; then
                         /usr/bin/echo "Successfully sent log info to server" >> "$daily_log"
                     else
                         /usr/bin/echo "Failed to send log info to server" >> "$daily_log"
                     fi
-                    
-                    # Reset file log thay vi xoa hoan toan
-                    /usr/bin/echo "# Log file reset on $(/usr/bin/date) - Previous size: ${size_mb}MB" > "$log_file"
-                    /usr/bin/echo "Log file $log_file has been reset" >> "$daily_log"
                     
                     # Xoa file daily log de cho phep xu ly tiep tuc trong lan chay tiep theo
                     /usr/bin/rm -f /tmp/cronjob-1day-*.log
