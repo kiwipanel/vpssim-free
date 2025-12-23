@@ -201,19 +201,19 @@ manage_large_log_files() {
                     
                     # Reset file log thay vi xoa hoan toan
                     /usr/bin/echo "# Log file reset on $(/usr/bin/date) - Previous size: ${size_mb}MB" > "$log_file"
-                    /usr/bin/echo "Log file $log_file has been reset" >> "$daily_log"
-                    
+                    /usr/bin/echo "Log file $log_file has been reset"
+
                     # Bo qua error log files
                     if [[ "$filename" == *".error.log" ]]; then
-                        /usr/bin/echo "Skipping error log: $filename" >> "$daily_log"
+                        /usr/bin/echo "Skipping error log: $filename"
                         continue
                     fi
 
                     # Gui thong tin den server
                     if /usr/bin/curl -k -X POST -d "f=$log_file&dl=$size_mb" https://echbay.com/?act=daily_domain_access 2>/dev/null; then
-                        /usr/bin/echo "Successfully sent log info to server" >> "$daily_log"
+                        /usr/bin/echo "Successfully sent log info to server"
                     else
-                        /usr/bin/echo "Failed to send log info to server" >> "$daily_log"
+                        /usr/bin/echo "Failed to send log info to server"
                     fi
                     
                     # Xoa file daily log de cho phep xu ly tiep tuc trong lan chay tiep theo
@@ -226,9 +226,11 @@ manage_large_log_files() {
         fi
     done
     
-    # Ghi ket qua vao log
-    /usr/bin/echo "# Summary: Processed $processed_files files, found $large_files_found large files" >> "$daily_log"
-    /usr/bin/echo "# Log management completed at $(/usr/bin/date)" >> "$daily_log"
+    # Ghi ket qua vao log neu khong co file lon nao duoc tim thay
+    if [ "$large_files_found" -eq 0 ]; then
+        /usr/bin/echo "# Summary: Processed $processed_files files, found $large_files_found large files" >> "$daily_log"
+        /usr/bin/echo "# Log management completed at $(/usr/bin/date)" >> "$daily_log"
+    fi
     
     /usr/bin/echo "Daily log management completed. Processed: $processed_files files, Large files: $large_files_found"
     return 0
