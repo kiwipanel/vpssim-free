@@ -181,9 +181,19 @@ manage_large_log_files() {
         if [[ "$filename" == *.log ]]; then
             processed_files=$((processed_files + 1))
             
-            # Lay thong tin dung luong file
-            local size_info=$(du -sh "$log_file" 2>/dev/null)
+            # Lay thong tin dung luong file (chi lay phan dung luong, vi du: 1.1G)
+            local size_info=$(du -sh "$log_file" 2>/dev/null | awk '{print $1}')
             /usr/bin/echo "Checking: $log_file - Size: $size_info" >> "$daily_log"
+
+            # cat lay thong tin dung luong
+
+            # neu file co dung luong tinh theo G thi reset file (du -sh tra ve dinh dang nhu: 1.1G)
+            if [[ "$size_info" == *"G"* ]]; then
+                local size_gb=$(echo "$size_info" | grep -oE '[0-9]+\.?[0-9]*' | head -1)
+                /usr/bin/echo "# Log file reset on $(/usr/bin/date) - Previous size: ${size_gb}GB" > "$log_file"
+                /usr/bin/echo "Log file $log_file has been reset"
+                continue
+            fi
             
             # Kiem tra neu file co dung luong lon hon 10MB
             if [[ "$size_info" == *"M"* ]]; then
