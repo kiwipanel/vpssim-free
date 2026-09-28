@@ -13,6 +13,7 @@ for_woocommerce="woocommerce.10.4.3"
 for_yoast_seo="wordpress-seo.26.7"
 for_code_snippets=""
 for_akismet=""
+for_cf7=""
 
 # download file https://webgiare.org/api/v1/?action=plugins-version&token=a7K9vT2xQf8NcY1LmWz4RpJhX3oBdE6u và lưu vào /tmp/webgiare-plugins-version.conf
 curl -s "https://webgiare.org/api/v1/?action=plugins-version&token=a7K9vT2xQf8NcY1LmWz4RpJhX3oBdE6u" -o /tmp/webgiare-plugins-version.conf
@@ -426,6 +427,8 @@ rsync_wp_plugin(){
         get_wp_plugin_stable_version $1 for_code_snippets
         elif [ "$1" == "akismet" ]; then
         get_wp_plugin_stable_version $1 for_akismet
+        elif [ "$1" == "contact-form-7" ]; then
+        get_wp_plugin_stable_version $1 for_cf7
       fi
       
       # nếu download_version rỗng thì sử dụng $1
